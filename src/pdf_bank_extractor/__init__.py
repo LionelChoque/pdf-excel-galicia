@@ -8,7 +8,7 @@ __version__ = "1.0.0"
 __author__ = "Lionel Alan Choque"
 __email__ = "lionelchoque@gmail.com"
 
-from .pdf_plumber_pandas import main, run
+from .pdf_extractor import main, run
+from .utils import setup_environment
 
-# Exponer las funciones principales a nivel de paquete
-__all__ = ['main', 'run']
+__all__ = ['main', 'run', 'setup_environment']

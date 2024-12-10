@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-PDF Bank Extractor
------------------
-Extrae datos bancarios desde archivos PDF
-"""
-
 import sys
 import logging
 from pathlib import Path
@@ -16,7 +7,7 @@ import os
 import pdfplumber
 import pandas as pd
 import re
-   
+from utils import setup_environment     
 
 
 # Configuración de logging
@@ -157,19 +148,6 @@ def main():
 if __name__ == "__main__":
     df = main()
     
- 
-
-def setup_environment():
-    """Configura el entorno de ejecución"""
-    try:
-        # Asegura que existe el directorio de salida
-        output_dir = Path.home() / "PDF_Bank_Extractor"
-        output_dir.mkdir(exist_ok=True)
-        return output_dir
-    except Exception as e:
-        logger.error(f"Error configurando el entorno: {e}")
-        return None
-
 def run():
     """Función principal de ejecución"""
     try:
@@ -180,12 +158,10 @@ def run():
         df = main()
         
         if df is not None:
-            # Guardar en el directorio del usuario
             output_file = output_dir / "transacciones_bancarias.csv"
             df.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig', decimal=',')
             logger.info(f"Archivo guardado en: {output_file}")
             
-            # En Windows, abre el explorador en la carpeta
             if sys.platform == 'win32':
                 os.startfile(output_dir)
     

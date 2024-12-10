@@ -5,4 +5,4 @@ Extractor de datos bancarios desde archivos PDF.
 ## Instalación
 
 ```bash
-pip install pdf-bank-extractor
+pip install pdf_extractor

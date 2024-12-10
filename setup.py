@@ -11,7 +11,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pdf_extractor=pdf_extractor:main',
+            'pdf_extractor=pdf_bank_extractor.pdf_extractor:run',
         ],
     },
     author="Alan Choque",
@@ -19,7 +19,7 @@ setup(
     description="Extractor de datos bancarios desde PDF",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    keywords="pdf, bank, extract, data",
+    keywords="pdf, bank, extract, data, Galicia",
     url="https://github.com/LionelChoque/pdf-excel-galicia.git",
     classifiers=[
         "Programming Language :: Python :: 3",
