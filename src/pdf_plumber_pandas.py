@@ -1,10 +1,48 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+PDF Bank Extractor
+-----------------
+Extrae datos bancarios desde archivos PDF
+"""
+
+import sys
+import logging
+from pathlib import Path
+import tkinter as tk
+from tkinter import filedialog
+import os
 import pdfplumber
 import pandas as pd
 import re
+   
 
-# Ruta del archivo
-pdf_path = r"C:\Users\alan_\OneDrive\Escritorio\BAIRES - Resumen Galicia 31-10-2023.pdf"
-#pdf_path = "/content/drive/MyDrive/Temporal/BAIRES - Resumen Galicia 31-10-2023.pdf"
+
+# Configuración de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def get_pdf_path_gui():
+    
+    root = tk.Tk()
+    root.withdraw()  # Ocultar la ventana principal de tkinter
+    while True:
+        file_path = filedialog.askopenfilename(
+            title="Seleccione el archivo PDF",
+            filetypes=[("Archivos PDF", "*.pdf")]
+        )
+        
+        if file_path:  # Si se seleccionó un archivo
+            if os.path.exists(file_path):
+                return file_path
+        else:  # Si el usuario canceló la selección
+            if tk.messagebox.askokcancel("Cancelar", "¿Desea salir del programa?"):
+                sys.exit()
+            continue
 
 def extract_text_from_pdf(pdf_path):
     """Extrae el texto del PDF y lo muestra para debugging"""
@@ -82,6 +120,8 @@ def format_output(df):
 
 def main():
     try:
+        # Obtener la ruta del archivo mediante interfaz gráfica
+        pdf_path = get_pdf_path_gui()
         # Primero extraemos y mostramos el texto para debugging
         print("Extrayendo texto del PDF...")
         all_text = extract_text_from_pdf(pdf_path)
@@ -116,3 +156,42 @@ def main():
 # Ejecutar el código
 if __name__ == "__main__":
     df = main()
+    
+ 
+
+def setup_environment():
+    """Configura el entorno de ejecución"""
+    try:
+        # Asegura que existe el directorio de salida
+        output_dir = Path.home() / "PDF_Bank_Extractor"
+        output_dir.mkdir(exist_ok=True)
+        return output_dir
+    except Exception as e:
+        logger.error(f"Error configurando el entorno: {e}")
+        return None
+
+def run():
+    """Función principal de ejecución"""
+    try:
+        output_dir = setup_environment()
+        if not output_dir:
+            sys.exit(1)
+
+        df = main()
+        
+        if df is not None:
+            # Guardar en el directorio del usuario
+            output_file = output_dir / "transacciones_bancarias.csv"
+            df.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig', decimal=',')
+            logger.info(f"Archivo guardado en: {output_file}")
+            
+            # En Windows, abre el explorador en la carpeta
+            if sys.platform == 'win32':
+                os.startfile(output_dir)
+    
+    except Exception as e:
+        logger.error(f"Error en la ejecución: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    run()
