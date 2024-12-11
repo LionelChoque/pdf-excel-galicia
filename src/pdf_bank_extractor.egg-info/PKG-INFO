@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: pdf_bank_extractor
+Version: 1.0.0
+Summary: Extractor de datos bancarios desde PDF
+Home-page: https://github.com/LionelChoque/pdf-excel-galicia.git
+Author: Alan Choque
+Author-email: lionelchoque@gmail.com
+Keywords: pdf,bank,extract,data,Galicia
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: pdfplumber
+Requires-Dist: pandas
+
+# PDF Bank Extractor
+
+Extractor de datos bancarios desde archivos PDF.
+
+## InstalaciÃ³n
+
+```bash
+pip install pdf_extractor

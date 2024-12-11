@@ -7,7 +7,7 @@ import os
 import pdfplumber
 import pandas as pd
 import re
-from utils import setup_environment     
+from .utils import setup_environment
 
 
 # Configuración de logging

@@ -1,0 +1,2 @@
+[console_scripts]
+pdf_extractor = pdf_bank_extractor.pdf_extractor:run

@@ -6,8 +6,8 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        "pdfplumber>=0.10.2",
-        "pandas>=2.1.1",
+        "pdfplumber",
+        "pandas"             
     ],
     entry_points={
         'console_scripts': [
