@@ -34,6 +34,7 @@ def get_pdf_path_gui():
             if tk.messagebox.askokcancel("Cancelar", "¿Desea salir del programa?"):
                 sys.exit()
             continue
+        
 
 def extract_text_from_pdf(pdf_path):
     """Extrae el texto del PDF y lo muestra para debugging"""
@@ -113,6 +114,8 @@ def main():
     try:
         # Obtener la ruta del archivo mediante interfaz gráfica
         pdf_path = get_pdf_path_gui()
+        # Obtener el nombre base del archivo PDF sin la extensión
+        pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
         # Primero extraemos y mostramos el texto para debugging
         print("Extrayendo texto del PDF...")
         all_text = extract_text_from_pdf(pdf_path)
@@ -131,22 +134,26 @@ def main():
             print("\nTransacciones extraídas:")
             print(df)
             
-            # Guardar a CSV
-            df.to_csv('transacciones_bancarias.csv', index=False, sep=';',encoding='utf-8-sig', decimal=',')
-            print("\nArchivo CSV generado exitosamente.")
+            # Guardar a CSV con el mismo nombre que el PDF
+            csv_filename = f'{pdf_name}.csv'
+            df.to_csv(csv_filename, index=False, sep=';', encoding='utf-8-sig', decimal=',')
+            print(f"\nArchivo CSV generado exitosamente como: {csv_filename}")
             
-            return df
+            return df, pdf_name  # Retornamos también el nombre del archivo
         else:
             print("No se encontraron transacciones en el PDF.")
-            return None
+            return None, None
             
     except Exception as e:
         print(f"Error durante el proceso: {str(e)}")
-        return None
-
+        return None, None
+    
+    
+'''
 # Ejecutar el código
 if __name__ == "__main__":
     df = main()
+'''
     
 def run():
     """Función principal de ejecución"""
@@ -155,10 +162,10 @@ def run():
         if not output_dir:
             sys.exit(1)
 
-        df = main()
+        df, pdf_name = main()  # Recibimos también el nombre del archivo
         
-        if df is not None:
-            output_file = output_dir / "transacciones_bancarias.csv"
+        if df is not None and pdf_name is not None:
+            output_file = output_dir / f"{pdf_name}.csv"
             df.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig', decimal=',')
             logger.info(f"Archivo guardado en: {output_file}")
             
@@ -168,6 +175,6 @@ def run():
     except Exception as e:
         logger.error(f"Error en la ejecución: {e}")
         sys.exit(1)
-
+        
 if __name__ == "__main__":
     run()

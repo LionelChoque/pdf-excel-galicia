@@ -2,10 +2,17 @@
 
 Extractor de datos bancarios desde archivos PDF.
 
+## Empaquetar
+
+Contruir el paquete con:
+
+```bash
+python -m build
+```
 
 ## Instalación
 
-cmd dentro de la carpeta dist
+cmd dentro de la carpeta "dist" creada con el build
 
 ```bash
 pip install pdf_bank_extractor-1.0.0-py3-none-any.whl
