@@ -2,9 +2,22 @@
 
 Extractor de datos bancarios desde archivos PDF.
 
+## Entorno virtual
+
+activar entorno virtual
+
+```bash
+.venvPDF\Scripts\activate.bat
+```
+## Instalar empaquetador
+
+```bash
+pip install build
+```
+
 ## Empaquetar
 
-Contruir el paquete con:
+Construir el paquete con:
 
 ```bash
 python -m build
