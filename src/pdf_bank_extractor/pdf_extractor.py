@@ -46,7 +46,7 @@ def extract_text_from_pdf(pdf_path):
             print(text)
             all_text.append(text)
     return all_text
-
+"""
 def process_line(text):
     transactions = []
     # Dividimos el texto en líneas
@@ -95,7 +95,72 @@ def process_line(text):
                 continue
                 
     return transactions
+"""
+def process_line(text):
+    transactions = []
+    lines = text.split('\n')
+    date_pattern = r'\d{2}/\d{2}/\d{2}'
+    
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        
+        # Si la línea contiene una fecha
+        if re.search(date_pattern, line):
+            try:
+                parts = line.split()
+                date = parts[0]
+                numbers = re.findall(r'-?[\d.]+\,\d{2}', line)
+                description = ' '.join(parts[1:len(parts)-len(numbers)])
+                
+                # Buscar información adicional en las siguientes líneas
+                descripcion_adicional = []
+                next_index = i + 1
+                
+                # Seguir leyendo líneas hasta encontrar la siguiente transacción o línea vacía
+                while (next_index < len(lines) and 
+                       not re.search(date_pattern, lines[next_index]) and 
+                       lines[next_index].strip()):  # Verifica que la línea no esté vacía
+                    
+                    # Verificar que la línea no contenga solo números
+                    next_line = lines[next_index].strip()
+                    if not re.match(r'^[-\d.,\s]+$', next_line):
+                        descripcion_adicional.append(next_line)
+                    next_index += 1
+                
+                # Unir todas las líneas adicionales con un separador
+                descripcion_adicional_str = ' | '.join(descripcion_adicional) if descripcion_adicional else ''
+                
+                transaction = {
+                    'Fecha': date,
+                    'Descripción': description,
+                    'Descripcion_adicional': descripcion_adicional_str,
+                    'Crédito': '',
+                    'Débito': '',
+                    'Saldo': numbers[-1] if numbers else ''
+                }
+                
+                if len(numbers) > 1:
+                    if '-' in (numbers[0]):
+                        transaction['Débito'] = numbers[0]
+                    else:
+                        transaction['Crédito'] = numbers[0]
+                
+                transactions.append(transaction)
+                print(f"Transacción procesada: {transaction}")
+                
+                # Actualizar el índice para continuar después de las líneas adicionales
+                i = next_index - 1
+                
+            except Exception as e:
+                print(f"Error procesando línea: {line}")
+                print(f"Error: {str(e)}")
+        
+        i += 1
+                
+    return transactions
 
+"""
 def format_output(df):
     try:
         # Convertir fecha
@@ -109,7 +174,26 @@ def format_output(df):
     except Exception as e:
         print(f"Error en format_output: {str(e)}")
         return df
+"""
 
+def format_output(df):
+    try:
+        # Convertir fecha
+        df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%y')
+        
+        # Limpiar y convertir valores numéricos
+        for col in ['Crédito', 'Débito', 'Saldo']:
+            df[col] = df[col].str.replace(',', '').astype(float)
+        
+        # Asegurar que la columna Descripcion_adicional esté presente
+        if 'Descripcion_adicional' not in df.columns:
+            df['Descripcion_adicional'] = ''
+            
+        return df
+    except Exception as e:
+        print(f"Error en format_output: {str(e)}")
+        return df
+    
 def main():
     try:
         # Obtener la ruta del archivo mediante interfaz gráfica
@@ -135,7 +219,7 @@ def main():
             print(df)
             
             # Guardar a CSV con el mismo nombre que el PDF
-            csv_filename = f'{pdf_name}.csv'
+            csv_filename = f'{pdf_name}_CON_DESCRIPCION.csv'
             df.to_csv(csv_filename, index=False, sep=';', encoding='utf-8-sig', decimal=',')
             print(f"\nArchivo CSV generado exitosamente como: {csv_filename}")
             
@@ -165,7 +249,7 @@ def run():
         df, pdf_name = main()  # Recibimos también el nombre del archivo
         
         if df is not None and pdf_name is not None:
-            output_file = output_dir / f"{pdf_name}.csv"
+            output_file = output_dir / f"{pdf_name}_CON_DESCRIPCION.csv"
             df.to_csv(output_file, index=False, sep=';', encoding='utf-8-sig', decimal=',')
             logger.info(f"Archivo guardado en: {output_file}")
             
